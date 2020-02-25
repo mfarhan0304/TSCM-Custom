@@ -130,14 +130,14 @@ void arrive(void) /* Event function for arrival of job at CPU after think
 
     list_file(LAST, LIST_QUEUE_MAIN);
 
-    int queue_number;
     if (list_size[LIST_QUEUE_1] != QUEUE_CPU_LIMIT || list_size[LIST_QUEUE_2] != QUEUE_CPU_LIMIT) {
-        if (list_size[LIST_QUEUE_1] != QUEUE_CPU_LIMIT) {
-            queue_number = LIST_QUEUE_2;
-        } else if (list_size[LIST_QUEUE_2] != QUEUE_CPU_LIMIT) {
-            queue_number = LIST_QUEUE_1;
-        } else {
+        int queue_number;
+        if (list_size[LIST_QUEUE_1] != QUEUE_CPU_LIMIT && list_size[LIST_QUEUE_2] != QUEUE_CPU_LIMIT) {
             queue_number = (random_number < 0.5) ? LIST_QUEUE_1 : LIST_QUEUE_2;
+        } else if (list_size[LIST_QUEUE_1] != QUEUE_CPU_LIMIT) {
+            queue_number = LIST_QUEUE_2;
+        } else {
+            queue_number = LIST_QUEUE_1;
         }
 
         list_file(LAST, queue_number);
