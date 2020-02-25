@@ -37,6 +37,7 @@ int main() /* Main function. */
     /* Read input parameters. */
     int test_case = 1;
 
+    fscanf(infile, "%*[^\n]\n");
     while (fscanf(infile, "%d %d %d %d %f %f %f %f",
                   &min_terms, &max_terms, &incr_terms, &num_responses_required,
                   &mean_think, &mean_service, &quantum, &swap) == 8)
@@ -53,9 +54,10 @@ int main() /* Main function. */
         fprintf(outfile, "Swap time        %11.3f seconds\n\n", swap);
         fprintf(outfile, "Number of jobs processed%12d\n\n\n",
                 num_responses_required);
-        fprintf(outfile, "Number of      Average         Average        Average         Average");
-        fprintf(outfile, "         Utilization\n");
-        fprintf(outfile, "terminals   response time  N in queue 1       of CPU 1     N in queue 2       of CPU 2");
+        fprintf(outfile, "Number of      Average         Average       Utilization");
+        fprintf(outfile, "       Average       Utilization\n");
+        fprintf(outfile, "terminals   response time    N in queue 1     of CPU 1");
+        fprintf(outfile, "       N in queue 2     of CPU 2");
 
         /* Run the simulation varying the number of terminals. */
         for (num_terms = min_terms; num_terms <= max_terms;
@@ -126,13 +128,12 @@ void arrive(void) /* Event function for arrival of job at CPU after think
     transfer[1] = sim_time;
     transfer[2] = expon(mean_service, STREAM_SERVICE);
 
-    double random_number = uniform(0, 1, STREAM_UNIFORM);
-
     list_file(LAST, LIST_QUEUE_MAIN);
 
     if (list_size[LIST_QUEUE_1] != QUEUE_CPU_LIMIT || list_size[LIST_QUEUE_2] != QUEUE_CPU_LIMIT) {
         int queue_number;
         if (list_size[LIST_QUEUE_1] != QUEUE_CPU_LIMIT && list_size[LIST_QUEUE_2] != QUEUE_CPU_LIMIT) {
+            double random_number = uniform(0, 1, STREAM_UNIFORM);
             queue_number = (random_number < 0.5) ? LIST_QUEUE_1 : LIST_QUEUE_2;
         } else if (list_size[LIST_QUEUE_1] != QUEUE_CPU_LIMIT) {
             queue_number = LIST_QUEUE_2;
@@ -143,7 +144,6 @@ void arrive(void) /* Event function for arrival of job at CPU after think
         list_file(LAST, queue_number);
 
         int list_cpu = (queue_number == LIST_QUEUE_1) ? LIST_CPU_1 : LIST_CPU_2;
-        
         /* If the CPU is idle, start a CPU run. */
         if (list_size[list_cpu] == 0)
             start_CPU_run(queue_number);
